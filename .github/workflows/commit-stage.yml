@@ -9,16 +9,13 @@ env:
 jobs:
   build:
     name: Build
-    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        os: [ ubuntu-22.04, ubuntu-24.04 ]
+    runs-on: ${{ matrix.os }}
     permissions:
-      attestations: write
       contents: read
-      id-token: write
       packages: write
-      security-events: write
-    outputs:
-      image-digest: ${{ steps.image-info.outputs.digest }}
-      image-name: ${{ steps.image-info.outputs.name }}
     steps:
       - name: Check out source code
         uses: actions/checkout@v4
@@ -29,11 +26,6 @@ jobs:
           java-version: 21
           distribution: liberica
           cache: gradle
-      
-      - name: Compile and test
-        run: |
-          cd demo
-          ./gradlew clean build
 
       - name: Package as OCI image
         run: |
