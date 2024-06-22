@@ -60,8 +60,9 @@ jobs:
         run: |
           pack build ${{ env.REGISTRY }}/${{ env.IMAGE }} \
             --builder docker.io/paketobuildpacks/builder-jammy-buildpackless-tiny \
-            --buildpack gcr.io/paketo-buildpacks/java \
+            --buildpack gcr.io/paketo-buildpacks/java-native-image \
             --env BP_JVM_VERSION=21 \
+            --env BP_NATIVE_IMAGE=true \
             --path ${{ inputs.context }} \
             --platform ${{ matrix.platform }} \
             --report-output-dir ./report.toml \
@@ -145,10 +146,13 @@ jobs:
         run: |
           docker buildx imagetools inspect ${{ env.REGISTRY }}/${{ env.IMAGE }}:${{ steps.meta.outputs.version }}
 
-      - name: Set up Crane
-        uses: buildpacks/github-actions/setup-tools@v5.0.0
+      - name: Setup Arkade
+        uses: alexellis/setup-arkade@v2
+
+      - name: Install crane
+        uses: alexellis/arkade-get@master
         with:
-          crane-version: 0.19.2
+          crane: v0.19.2
       
       - name: Get OCI image digest
         id: image-info

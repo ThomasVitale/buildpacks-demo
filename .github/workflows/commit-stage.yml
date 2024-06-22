@@ -5,19 +5,38 @@ on:
   workflow_dispatch:
 
 jobs:
-  publish:
-    name: Publish
+  publish-jvm:
+    name: Publish JVM
     permissions:
       attestations: write
       contents: read
       id-token: write
       packages: write
-    uses: ./.github/workflows/multi-arch-publish.yml
+    uses: ./.github/workflows/multi-arch-publish-jvm.yml
     strategy:
       fail-fast: false
       matrix:
         project: [
-          {context: demo, image: buildpacks-demo-jvm},
+          {context: demo, image: buildpacks-demo-jvm}
+        ]
+    with:
+      context: ${{ matrix.project.context }}
+      image: ${{ matrix.project.image }}
+    secrets:  
+      push-token: ${{ secrets.IMAGE_PUSH_TOKEN }}
+  
+  publish-native:
+    name: Publish Native
+    permissions:
+      attestations: write
+      contents: read
+      id-token: write
+      packages: write
+    uses: ./.github/workflows/multi-arch-publish-native.yml
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [
           {context: demo-native, image: buildpacks-demo-native}
         ]
     with:
