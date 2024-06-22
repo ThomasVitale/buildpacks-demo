@@ -1,48 +1,27 @@
 name: Commit Stage
+
 on:
   push:
   workflow_dispatch:
 
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: thomasvitale/buildpacks-demo
-  VERSION: ${{ github.sha }}
-
 jobs:
-  build:
-    name: Build
-    strategy:
-      matrix:
-        os: [ ubuntu-20.04, ubuntu-22.04, ubuntu-24.04 ]
-    runs-on: ${{ matrix.os }}
+  publish:
+    name: Publish
     permissions:
+      attestations: write
       contents: read
+      id-token: write
       packages: write
-    steps:
-      - name: Check out source code
-        uses: actions/checkout@v4
-
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          java-version: 21
-          distribution: liberica
-          cache: gradle
-
-      - name: Package as OCI image
-        run: |
-          cd demo
-          ./gradlew bootBuildImage --imageName ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
-
-      - name: Authenticate with the container registry
-        uses: docker/login-action@v3
-        with:
-          username: ${{ github.actor }}
-          password: ${{ secrets.IMAGE_PUSH_TOKEN }}
-          registry: ${{ env.REGISTRY }}
-
-      - name: Publish OCI image
-        run: |
-          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+    uses: ./.github/workflows/multi-arch-publish.yml
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [
+          {context: demo, image: buildpacks-demo-jvm},
+          {context: demo-native, image: buildpacks-demo-native}
+        ]
+    with:
+      context: ${{ matrix.project.context }}
+      image: ${{ matrix.project.image }}
+    secrets:  
+      push-token: ${{ secrets.IMAGE_PUSH_TOKEN }}
