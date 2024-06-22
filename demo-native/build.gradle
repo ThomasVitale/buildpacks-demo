@@ -14,6 +14,11 @@ java {
     }
 }
 
+jar {
+    // see https://github.com/spring-projects/spring-boot/issues/33238
+    enabled = false
+}
+
 repositories {
     mavenCentral()
 }
