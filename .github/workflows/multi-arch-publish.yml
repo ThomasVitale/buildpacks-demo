@@ -64,16 +64,16 @@ jobs:
             --env BP_JVM_VERSION=21 \
             --path ${{ inputs.context }} \
             --platform ${{ matrix.platform }} \
-            --report-output-dir ./report-${{ matrix.platform }}.toml \
+            --report-output-dir ./report.toml \
             --publish
       
       - name: Export digest
         run: |
           mkdir -p /tmp/digests
-          digest=$(grep 'digest' report-${{ matrix.platform }}.toml | sed 's/.*= "\(.*\)"/\1/')
+          digest=$(grep 'digest' report.toml | sed 's/.*= "\(.*\)"/\1/')
           touch "/tmp/digests/${digest#sha256:}"
       
-      - name: Upload build reports
+      - name: Upload digest
         uses: actions/upload-artifact@v4
         with:
           name: digests-${{ inputs.image }}-${{ env.PLATFORM_PAIR }}
