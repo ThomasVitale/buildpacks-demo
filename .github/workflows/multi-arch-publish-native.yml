@@ -61,7 +61,7 @@ jobs:
           pack build ${{ env.REGISTRY }}/${{ env.IMAGE }} \
             --builder docker.io/paketobuildpacks/builder-jammy-buildpackless-tiny \
             --buildpack gcr.io/paketo-buildpacks/java-native-image \
-            --env BP_JVM_VERSION=21 \
+            --env BP_JVM_VERSION=22 \
             --env BP_NATIVE_IMAGE=true \
             --path ${{ inputs.context }} \
             --platform ${{ matrix.platform }} \
@@ -111,7 +111,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
       
       - name: Install Cosign
-        uses: sigstore/cosign-installer@v3.5.0
+        uses: sigstore/cosign-installer@v3.6.0
 
       - name: Generate Docker meta information
         id: meta
@@ -152,7 +152,7 @@ jobs:
       - name: Install crane
         uses: alexellis/arkade-get@master
         with:
-          crane: v0.19.2
+          crane: v0.20.2
       
       - name: Get OCI image digest
         id: image-info
