@@ -4,11 +4,11 @@
 
   "features": {
     "ghcr.io/devcontainers/features/java:1": {
-      "version": "21",
-      "jdkDistro": "graal"
+      "version": "22",
+      "jdkDistro": "graalce"
     },
     "ghcr.io/devcontainers/features/docker-in-docker:2": {
-      "version": "26.1.1"
+      "version": "26.1.4"
     }
   },
 
@@ -32,7 +32,7 @@
     "8080": {
       "label": "Spring Boot Application"
     }
-  }
+  },
 
   // "postCreateCommand": "",
 
